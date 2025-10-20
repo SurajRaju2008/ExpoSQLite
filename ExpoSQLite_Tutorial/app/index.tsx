@@ -7,9 +7,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableHighlight,
   View,
 } from "react-native";
-import { deleteItem, fetchItems, insertItem, updateItem, type Item } from "../data/db";
+import { deleteItem, fetchItems, insertItem, sortItemsAsc, updateItem, type Item } from "../data/db";
 import ItemRow from "./components/ItemRow";
 
 export default function App() {
@@ -214,6 +215,25 @@ export default function App() {
     ]);
   };
 
+  const sortUp = async ()=>{
+    const sortedList = await sortItemsAsc(db);
+    setItems(sortedList);
+  }
+
+
+  const deleteAll = async () =>{
+       Alert.alert("Delete item?", "This cannot be undone.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          setItems([]);
+        },
+      },
+    ]);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SQLite Example</Text>
@@ -246,6 +266,43 @@ export default function App() {
         title={editingId === null ? "Save Item" : "Update Item"}
         onPress={saveOrUpdate}
       />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around', // or 'space-between' or 'center'
+          margin: 20,
+        }}
+      >
+        <TouchableHighlight
+          onPress={sortUp}
+          underlayColor="#ddd"
+          style={{
+            backgroundColor: '#2196F3',
+            padding: 10,
+            borderRadius: 5,
+            flex: 1,          // make buttons take equal space
+            marginHorizontal: 5, // horizontal margin between buttons
+          }}
+        >
+          <Text style={{ color: '#fff', textAlign: 'center' }}>Sort A-Z</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          onPress={deleteAll}
+          underlayColor="#ddd"
+          style={{
+            backgroundColor: '#2196F3',
+            padding: 10,
+            borderRadius: 5,
+            flex: 1,
+            marginHorizontal: 5,
+          }}
+        >
+          <Text style={{ color: '#fff', textAlign: 'center' }}>Reset All</Text>
+        </TouchableHighlight>
+      </View>
+
+
       <FlatList
         style={styles.list}
         data={items}
